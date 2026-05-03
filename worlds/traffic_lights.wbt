@@ -19,8 +19,8 @@ WorldInfo {
   ]
 }
 Viewpoint {
-  orientation -0.22110773411597576 0.561070023619945 0.7976915434610131 0.9177305767800297
-  position -1.3665254680885335 -1.269419084564512 1.266340472045454
+  orientation -0.2672650312599832 0.6403452327348638 0.7200884570518634 1.0506068781978075
+  position -0.9088159728595868 -0.883659229523708 1.2258573363615284
   followType "None"
   followSmoothness 0.04
 }
@@ -29,18 +29,13 @@ TexturedBackground {
 }
 TexturedBackgroundLight {
 }
-Robot {
+Solid {
   children [
     DEF shapes Group {
       children [
         CadShape {
           url [
             "obj/track/track/Track02.obj"
-          ]
-        }
-        CadShape {
-          url [
-            "obj/track/trafficlights/trafficlights02.obj"
           ]
         }
         CadShape {
@@ -100,6 +95,25 @@ Robot {
         }
       ]
     }
+  ]
+  name "small town"
+  boundingObject Pose {
+    translation 0 0 -0.5
+    rotation 0 0 1 0.785398
+    children [
+      Box {
+        size 10 10 1
+      }
+    ]
+  }
+}
+Robot {
+  children [
+    DEF traffic_lights CadShape {
+      url [
+        "obj/track/trafficlights/trafficlights02.obj"
+      ]
+    }
     DEF leds Group {
       children [
         LED {
@@ -107,7 +121,7 @@ Robot {
           children [
             PointLight {
               attenuation 0 0 1
-              color 0 0 0
+              color 1 0 0
               intensity 1.2
               on FALSE
               radius 0.02
@@ -136,7 +150,7 @@ Robot {
           children [
             PointLight {
               attenuation 0 0 1
-              color 0 1 0
+              color 0 0 0
               intensity 0.7
               on FALSE
               radius 0.02
@@ -152,7 +166,7 @@ Robot {
           children [
             PointLight {
               attenuation 0 0 1
-              color 1 0 0
+              color 0 0 0
               intensity 1.2
               on FALSE
               radius 0.02
@@ -165,7 +179,7 @@ Robot {
           children [
             PointLight {
               attenuation 0 0 1
-              color 0 0 0
+              color 1 1 0
               intensity 0.6
               on FALSE
               radius 0.02
@@ -181,7 +195,7 @@ Robot {
           children [
             PointLight {
               attenuation 0 0 1
-              color 0 0 0
+              color 0 1 0
               intensity 0.7
               on FALSE
               radius 0.02
@@ -197,16 +211,7 @@ Robot {
     Speaker {
     }
   ]
-  name "traffic"
-  boundingObject Pose {
-    translation 0 0 -0.5
-    rotation 0 0 1 0.785398
-    children [
-      Box {
-        size 10 10 1
-      }
-    ]
-  }
+  name "traffic lights"
   controller "traffic_ctrl"
   supervisor TRUE
 }
