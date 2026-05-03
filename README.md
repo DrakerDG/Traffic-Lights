@@ -218,6 +218,11 @@ This project is conceived as a support and complement to the JetBot robotic ecos
 
 ---
 
+## Important Notice
+Under no circumstances should the JetBot robot’s autonomous driving model be used in any real-world vehicle or system where its operation could pose a risk to human safety or well-being.
+
+---
+
 ## Relationship to JetBot robot owner
 
 - All credit for the robot concept belongs to the open-source JetBot real robot project and its contributors.
