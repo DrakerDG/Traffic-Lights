@@ -9,7 +9,7 @@
 
 # You need to have OpenCV installed in Python; 
 # you can use the following command:
-# python3 -m pip3 install opencv-python
+# python3 -m pip install opencv-python
 
 import cv2                           #  to load the OpenCV library in Python
 import numpy as np                   #  to load the NumPy library and assigning it the alias np
