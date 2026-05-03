@@ -1,0 +1,22 @@
+# Blender 5.0.1 MTL File: 'Track01.blend'
+# www.blender.org
+
+newmtl tree
+Ns 640.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+map_Kd /home/drakerdg/WebotsProjects/Jetbot_V1/worlds/obj/track/docs/tree/tree_001.png
+map_d /home/drakerdg/WebotsProjects/Jetbot_V1/worlds/obj/track/docs/tree/tree_001.png
+
+newmtl tree_a
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /home/drakerdg/WebotsProjects/Jetbot_V1/worlds/obj/track/docs/tree/tree_001.jpg
