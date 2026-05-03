@@ -1,48 +1,37 @@
-﻿# RMC-TRACER Line-Following Robot Simulation (Webots – C++)
-
-*Based on the real robot RMC-TRACER of @takumi_fc3s*
+﻿# Traffic lights - Driving simulation of 2 JetBot robots
+ Webots – Python - OpenCV
 
 ---
 
 ## Project Overview
 
-This project implements an **line-following robot controller** written in **C++ for Webots**, targeting a line-Following Robot differential drive robot (RMC-TRACER).
+This project involves simulating two types of robots. The first robot controls and synchronizes two traffic lights using a Python controller. The second robot is a JetBot prototype used to represent two robots that can drive autonomously using the same Python controller, which includes the OpenCV and NumPy libraries. This robot uses a camera for navigation, processing each frame to determine the center of the road and thus follow its path. It can also detect red traffic lights and stop accordingly.
 
-The controller includes sensor calibration and PID-based steering, designed to preserve stability while it followin the line.
-
-![World Overview](docs/images/Webots/RMC-TRACER-V2_1.png)
+![World Overview](docs/webots/traffic_lights.png)
 
 ---
 
 ## Current Implementation Status
 
 ### Fully implemented features
-- Automatic sensor calibration
-- FSM-Finite state machine control
-- PID-Adaptative based line following (*New!*)
+- Sequential control and synchronization system for two traffic lights using FSM
+- Navigation system using artificial vision, including road following and red light recognition for traffic lights
 
 ---
 
-## 3D Model Design Basis
+## 3D model design of the road
 
-This project is based on the real RMC-TRACER robot by @takumi_fc3s. I used the original 3D design of the robot's body model, including the chassis, battery holder, and cover. I modeled the hardware in Blender—the motors, PCBs, and their components—taking care to keep the model mesh as simple as possible while still capturing the details of the real robot.
+This project uses a low-poly model created in Blender that represents a small figure-eight road, containing an intersection with two traffic lights. I've added some houses and trees to enhance the model (small town).
 
-![World Overview](docs/images/Renders/Blender/Blender01.png)
-*Optimized 3D design mesh.*
+![Little Town](docs/renderes/town001.png)
 
-![World Overview](docs/images/Renders/Blender/Blender02.png)
-*3D design formed with separate objects with colors and textures.*
-
-![World Overview](docs/images/Renders/Blender/Blender03.png)
-*Complete 3D model.*
-
-![World Overview](docs/images/Renders/Blender/Blender04.png)
-*3D model hardware (internal parts).*
+![Little Town](docs/renderes/town004.png)
 
 ## Webots World Structure
 
-The simulation is built around a complete Webots world that combines **functional separation** and **visual realism**.
-Each component has a specific responsibility, allowing clean interaction between control logic, visualization, and timing.
+The simulation is based on a Webots world that features a small road within a small town.
+
+At its center is an intersection controlled by a pair of traffic lights to prevent collisions between two JetBot robots.
 
 ### World Components
 
@@ -55,82 +44,111 @@ Each component has a specific responsibility, allowing clean interaction between
 - **TexturedBackground**
   Provides background textures and lighting conditions for the environment.
 
-- **Sport Center (Solid)**
-  A 3D sports center model used as the main environment backdrop.
+- **Small Town**
+  Contains the ground that supports the simulation (solid) and the 3D models that make up the small town, including the road, traffic lights, houses and trees.
 
-- **Furnished Group**
-  A set of desks, chairs, and computers that enrich the indoor scene and provide a realistic context.
 
 ```
 World
-├── Environment (Sport Center, Furniture)
-├── Visualization (Follower_cam Robot)
-├── Timing & Events (Start_goal Robot)
-└── Line Follower Control (RMC-TRACER Robot)
+├── Small Town (Solid)
+├── Traffic Lights (Robot)
+├── JetBot 1 (Green Robot)
+└── JetBot 2 (Blue Robot)
 ```
 
 ---
 
 ### Robots in the World
 
-- **RMC-TRACER Robot**
-  The line follower robot controlled.
-  It performs:
-  - Sensor calibration
-  - Pause
-  - Line follower tracer 
+- **Traffic Lights**
+  It is the robot that controls the operation of the traffic lights.
 
-- **Follower_cam Robot**
-  A lightweight robot equipped with a follow camera.
-  Its controller keeps the RMC-TRACER robot centered in view while applying a smooth oscillatory motion, improving visual tracking and presentation.
+- **JetBot 1 & JetBot 2 Robots**
+  These are two small robots, models (PROTOs) available from Webots and based on the real open-source robot based on NVIDIA Jetson Nano.
+  The controller for these robots allows them to drive autonomously using artificial vision (OpenCV), recognizing the center of the road, as well as the red light of the traffic lights.
 
 ---
 
 ## ⚠️ Model & Physical Limitations
 
-The robot model does **not include a suction or downforce system**.
+This robot does **not include distance sensors, nor a lidar sensor for navigation**.
 
 ### As a result:
-- Abrupt acceleration may cause the front of the robot to lift
-- Sudden speed changes can reduce sensor contact and stability
-- High-speed entry into tight curves may lead to track loss
+- If solid objects are added to the road that are indistinguishable from the road (color and/or shape), a collision is possible.
+- Something similar happens if the objects are outside the areas of interest for machine vision processing; they are practically invisible and can cause collisions.
+- If the robots are moving at a considerable speed, they may not detect red traffic lights (just like in real life).
 
 ### For this reason, the controller applies:
 
 - Speed limits
-- PID adaptative limits
+- Road free of objects or other robots during the journey, except for the intersection where the traffic lights are located.
 
-The purpose of these limitations is to accurately reflect the behavior of the real robot.
+The purpose of these limitations is to maintain functional behavior within the constraints of the robots..
 
 ---
 
 ## Performance Summary
+
 ```
-├── Track length:         12.50 m
-├── Radius of curves:      0.15 m
-├── Average speed:         0.50 m/s
+├── Road length:           1.47 m
+├── Radius of curves:      0.50 m
+├── Average speed:         0.58 m/s
 ```
-Performance depends on simulation parameters and host machine capabilities.
 
 ---
 
-## Code Architecture
-
-The controller is fully modular and split into multiple files:
+## Code controller files
 
 ```
-├── RMC_Tracer_Ctrl.cpp    // State machine and orchestration (Main)
-├── Config.hpp             // Global configuration & constants
-├── State.*                // Robot states
-├── Sensors.*              // Sensor handling & normalization
-├── PID.*                  // PID controller
-├── SpeedCtrl.*            // Motor and speed management
-├── Sound.*                // Sound indicator
-├── UI.*                   // 3D visualization (OLED screen)
-├── Graph.*                // Graphics processing
+├── traffic_ctrl.py           // Traffic light controller
+├── Jetbot_ctrl.py            // JetBot robot controller
 ```
 
-![Structure](docs/images/Webots/Controller_Map_V2.png)
+### Prerrequisites
+
+The controllers are written in Python (fully commented), however the robot controller requires the installation of the OpenCV library as a prerequisite.
+
+- Installing Python
+
+1. Open the terminal (Ctrl + Alt + T) and update the list of available packages:
+
+```
+sudo apt update
+```
+
+2. Install Python 3 (the default version in most recent distributions):
+```
+sudo apt install python3
+```
+
+3. Verify the installation by typing:
+```
+python3 --version
+```
+
+
+- Installing OpenCV
+
+1. Update the system:
+```
+sudo apt update
+```
+
+2. To instalin OpenCV library you can use pip to get the most up-to-date version, or apt for a stable version that's well integrated with the system.
+   
+pip option:
+```
+python3 -m pip install opencv-python
+```
+apt option:
+```
+sudo apt install python3-opencv
+```
+
+3. Verify the installation by typing:
+```
+python3 -c "import cv2; print(cv2.__version__)"
+```
 
 ---
 
@@ -138,13 +156,11 @@ The controller is fully modular and split into multiple files:
 
 1. Clone the repository
 2. Open the world in Webots
-3. Compile the RMC_Tracer_Ctrl.cpp robot controller -> [Go to How to compile *.cpp controllers](#how-to-compile-cpp-controllers)
-4. Compile the Follow_Cam001.cpp robot controller   -> [Go to How to compile *.cpp controllers](#how-to-compile-cpp-controllers)
-5. Run the simulation
-6. Observe: calibration → pause → line follower run
+3. Run the simulation
+4. Observe: synchronized operation of traffic lights → automatic driving of the two JetBot robots, as well as red light recognition to stop
 
 ```
-git clone https://github.com/DrakerDG/RMC-TRACER
+git clone https://github.com/DrakerDG/Traffic-Lights.git
 ```
 
 No manual tuning is required for basic operation.
@@ -157,21 +173,20 @@ No manual tuning is required for basic operation.
 - CPU: 11th Gen Intel i7-11800H (16) @ 4.600GHz
 - GPU: NVIDIA GeForce RTX 3060 Mobile / Max-Q
 - Memory: 31727MiB 
-- OS: Ubuntu 24.04.3 LTS x86_64
+- OS: Ubuntu 24.04.4 LTS x86_64
 - Simulator: Webots
 - 3D design: Blender
-- Textures: Inkscape & Gimp
 ```
 ---
 
 ## Feedback & Contributions
 
 Feedback is welcome in the following areas:
-- Control logic improvements
-- PID tuning strategies
+- Improvements to the control logic
+- Enhancements and capabilities in visual AI processing
 - Performance on different machines
-- Code structure and maintainability
-- Webots-specific optimizations
+- Improvements to the overall code structure
+- Specific optimizations for Webots
 
 Please refer to **CONTRIBUTING.md** before submitting changes.
 
@@ -179,38 +194,33 @@ Please refer to **CONTRIBUTING.md** before submitting changes.
 
 ## Screenshots & Visualization
 
-![World Overview](docs/images/Webots/RMC-TRACER-V2_2.png)
-*Webots world overview showing the sports center environment, track layout, and RMC-TRACER Robot during simulation.*
+![World Overview](docs/webots/traffic_lights_1.png)
 
-![Line Follower Robot - 3D View](docs/images/Webots/RMC-TRACER-V2_3.png)
-*RMC_Tracer_Ctrl following the track using PID control.*
+![World Overview](docs/webots/traffic_lights_2.png)
 
-![Real-Time UI Overlay](docs/images/Webots/RMC-TRACER-V2_4.png)
-*Real-time 3D display showing timer, elapsed, state, robot speed and sensor states during execution.*
+![World Overview](docs/webots/traffic_lights_3.png)
 
-![Simulation Environment Detail](docs/images/Webots/RMC-TRACER-V2_5.png)
-*Indoor sports center environment with furnished elements used to provide a realistic simulation context.*
+![World Overview](docs/webots/traffic_lights_4.png)
 
 ---
 
 ## Project Intent
 
 The primary goals of this repository are:
-- To explore control strategies in simulation
-- To study line-following performance under realistic physical constraints
-- To evaluate PID behavior and speed profiling
-- To provide a reference implementation for experimentation and learning
+- Explore control strategies in simulation
+- Study basic driving using artificial vision in an environment that can be reproduced with real robots
+- Provide a reference implementation for experimentation and learning
 
-This project exists as a supportive and complementary effort to the RMC-TRACER robot ecosystem, offering:
-- A simulation-based environment
-- A modular C++ controller architecture
-- Reproducible experiments without hardware risk
+This project is conceived as a support and complement to the JetBot robotic ecosystem, offering:
+- A simulation-based environment that can be replicated in real robots
+- Controllers written in Python using OpenCV and NumPy
+- Reproducible experiments without risk of hardware failure
 
 ---
 
-## Relationship to RMC-TRACER robot owner
+## Relationship to JetBot robot owner
 
-- All credit for the robot concept belongs to the RMC-TRACER robot and its contributors (@takumi_fc3s)
+- All credit for the robot concept belongs to the open-source JetBot real robot project and its contributors.
 - This repository aims to add value through simulation, not ownership
 - Improvements developed here are intended to be shared openly
 
@@ -228,7 +238,7 @@ This repository prioritizes:
 Any contribution should align with these principles.
 
 ## Final note
-“If this work helps improve understanding or development of the RMC-TRACER robot on the line follower running, it has fulfilled its purpose.”
+“If this work contributes to improving the understanding or development of simulation in Webots or the real use of robots with the use of artificial vision, it will have fulfilled its purpose.”
 
 ---
 
@@ -240,43 +250,18 @@ Any contribution should align with these principles.
 - **Webots Simulator**
   https://cyberbotics.com
 
-- **takumi**
-  https://x.com/takumi_fc3s
+- **JetBot PROTO**
+  https://cyberbotics.com/doc/guide/jetbot?version=R2021b#nvidia-jetbot
+
+- **JetBot**
+  https://jetbot.org/master
+
+- **HSV reference**
+  https://en.wikipedia.org/wiki/HSL_and_HSV
 
 - **DrakeDG**
-  https://x.com/draker_dg
+  https://x.com/draker_dg |  
   www.youtube.com/@DrakerDG
 
 ---
 
-## Appendix
-
-### How to compile *.cpp controllers
-
-![Build cpp](docs/images/Webots/Build/build01.png)
-*Open file RMC_Tracer_Ctrl.cpp*
-
-![Build cpp](docs/images/Webots/Build/build02.png)
-*Start the build process (Build the current project)*
-
-![Build cpp](docs/images/Webots/Build/build03.png)
-*Confirmation of successful build!*
-
-![Build cpp](docs/images/Webots/Build/build04.png)
-*Open file Follow_Cam001.cpp*
-
-![Build cpp](docs/images/Webots/Build/build05.png)
-*Start the build process (Build the current project)*
-
-![Build cpp](docs/images/Webots/Build/build06.png)
-*Confirmation of successful build!*
-
----
-
-## Bonus
-
-### 3D model renders
-- **Renders**
-
-[![Renders](docs/images/Renders/Renders.png)](docs/images/Renders/Wallpaper)
-[*Preview*](docs/images/Renders/Wallpaper)
